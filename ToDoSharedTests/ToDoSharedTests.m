@@ -1,10 +1,3 @@
-//
-//  ToDoSharedTests.m
-//  ToDoSharedTests
-//
-//  Created by Hasan Serdar Bakirtas on 21.12.23.
-//
-
 #import <XCTest/XCTest.h>
 
 @interface ToDoSharedTests : XCTestCase

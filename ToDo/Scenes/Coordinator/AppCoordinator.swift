@@ -22,12 +22,20 @@ class AppCoordinator : Coordinator {
     }
 
     func start() {
-        makeViewController()
+        makeTodoListViewController()
     }
     
-    func makeViewController(){
-
-        let viewController = ViewController()
-        navigationController.pushViewController(viewController, animated: true)
+    func makeTodoListViewController(){
+        let todoListViewController = TodoListViewController()
+        todoListViewController.viewModel.appCoordinator = self
+        navigationController.pushViewController(todoListViewController, animated: true)
+    }
+    
+    func makeCreateTodoViewController(){
+        let createTodoViewController = CreateTodoViewController()
+//        groceryListViewModel.appCoordinator = self
+//        createTodoViewController.modalPresentationStyle = .fullScreen
+        navigationController.pushViewController(createTodoViewController, animated: true)
+//        navigationController.present(createTodoViewController, animated: true)
     }
 }
