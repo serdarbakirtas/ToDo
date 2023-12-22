@@ -14,9 +14,7 @@ class CreateTodoViewController: UIViewController {
         
         self.navigationItem.rightBarButtonItem = barButtonItem
         
-        barButtonItem.tapAction = {
-//            self.
-        }
+        barButtonItem.tapAction = {}
         
         view = contentView
     }
