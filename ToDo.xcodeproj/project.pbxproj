@@ -11,6 +11,7 @@
 		304988422B34EB9900852459 /* TodoListViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 304988412B34EB9900852459 /* TodoListViewController.swift */; };
 		304988472B34EB9B00852459 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 304988462B34EB9B00852459 /* Assets.xcassets */; };
 		3049884A2B34EB9B00852459 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 304988482B34EB9B00852459 /* LaunchScreen.storyboard */; };
+		30DC929F2B36424D00D05409 /* TodoListViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30DC929E2B36424D00D05409 /* TodoListViewCell.swift */; };
 		30EBA3AD2B34EBD100F12C46 /* ToDoShared.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 30EBA3A52B34EBD000F12C46 /* ToDoShared.framework */; };
 		30EBA3B42B34EBD100F12C46 /* ToDoSharedTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 30EBA3B32B34EBD100F12C46 /* ToDoSharedTests.m */; };
 		30EBA3B52B34EBD100F12C46 /* ToDoShared.h in Headers */ = {isa = PBXBuildFile; fileRef = 30EBA3A72B34EBD000F12C46 /* ToDoShared.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -70,6 +71,7 @@
 		304988462B34EB9B00852459 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		304988492B34EB9B00852459 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		3049884B2B34EB9B00852459 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		30DC929E2B36424D00D05409 /* TodoListViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TodoListViewCell.swift; sourceTree = "<group>"; };
 		30EBA3A52B34EBD000F12C46 /* ToDoShared.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = ToDoShared.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		30EBA3A72B34EBD000F12C46 /* ToDoShared.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ToDoShared.h; sourceTree = "<group>"; };
 		30EBA3AC2B34EBD100F12C46 /* ToDoSharedTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = ToDoSharedTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -192,6 +194,7 @@
 			children = (
 				304988412B34EB9900852459 /* TodoListViewController.swift */,
 				30EBA3C92B34F1DE00F12C46 /* TodoListView.swift */,
+				30DC929E2B36424D00D05409 /* TodoListViewCell.swift */,
 			);
 			path = TodoList;
 			sourceTree = "<group>";
@@ -372,6 +375,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				30DC929F2B36424D00D05409 /* TodoListViewCell.swift in Sources */,
 				30EBA3C42B34EDCB00F12C46 /* AppCoordinator.swift in Sources */,
 				30EBA3D22B34F58400F12C46 /* CreateTodoViewController.swift in Sources */,
 				304988422B34EB9900852459 /* TodoListViewController.swift in Sources */,

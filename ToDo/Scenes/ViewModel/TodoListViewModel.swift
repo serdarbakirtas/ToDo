@@ -13,10 +13,14 @@ class TodoListViewModel {
                     name: "Hasan",
                     children: [Todo(
                         name: "Ada",
-                        children: []
-                    )]
-                )]
-            )]
+                        children: [],
+                        isCompleted: false
+                    )],
+                    isCompleted: false
+                )],
+                isCompleted: false
+            )], 
+            isCompleted: false
         ),
         Todo(
             name: "Sukran",
@@ -24,9 +28,12 @@ class TodoListViewModel {
                 name: "Gizem",
                 children: [Todo(
                     name: "Ada",
-                    children: []
-                )]
-            )]
+                    children: [], 
+                    isCompleted: false
+                )],
+                isCompleted: false
+            )],
+            isCompleted: false
         )
     ]
 

@@ -39,7 +39,6 @@ private extension TodoListView {
         let listLayout = UICollectionViewCompositionalLayout.list(using: config)
         collectionView = UICollectionView(frame: .zero, collectionViewLayout: listLayout)
         collectionView.translatesAutoresizingMaskIntoConstraints = false
-        collectionView.backgroundColor = .systemBackground
         addSubview(collectionView)
         
         NSLayoutConstraint.activate([
