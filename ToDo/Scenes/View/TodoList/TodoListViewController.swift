@@ -1,7 +1,7 @@
 import UIKit
 
 class TodoListViewController: UIViewController {
-
+    
     // UI
     private lazy var contentView = TodoListView()
     private var dataSource: UICollectionViewDiffableDataSource<Int, Todo>! = nil
@@ -40,11 +40,9 @@ extension TodoListViewController {
             var content = cell.defaultContentConfiguration()
             content.text = node.name
             cell.contentConfiguration = content
-            
             cell.accessories = node.children.isEmpty ? [] : [.outlineDisclosure()]
         }
-        
-        dataSource = UICollectionViewDiffableDataSource<Int, Todo>(collectionView: contentView.collectionView) { 
+        dataSource = UICollectionViewDiffableDataSource<Int, Todo>(collectionView: contentView.collectionView) {
             (collectionView, indexPath, node) -> UICollectionViewCell? in
             return collectionView.dequeueConfiguredReusableCell(using: cellRegistration, for: indexPath, item: node)
         }
