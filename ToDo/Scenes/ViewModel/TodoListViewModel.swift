@@ -1,43 +1,48 @@
 import Foundation
+import UIKit
 
-class TodoListViewModel {
+protocol TodoListViewModelProtocol {
+    func fetchTask() -> [Todo]
+    func deleteTask(item: Todo)
+    func makeCreateTodoViewController(parentId: String?)
+    
+    var appCoordinator : AppCoordinator? { get set }
+}
+
+class TodoListViewModel: TodoListViewModelProtocol {
     
     // Coordinator
     weak var appCoordinator : AppCoordinator?
-    var todo: [Todo] = [
-        Todo(
-            name: "Murat",
-            children: [Todo(
-                name: "Mehmet",
-                children: [Todo(
-                    name: "Hasan",
-                    children: [Todo(
-                        name: "Ada",
-                        children: [],
-                        isCompleted: false
-                    )],
-                    isCompleted: false
-                )],
-                isCompleted: false
-            )], 
-            isCompleted: false
-        ),
-        Todo(
-            name: "Sukran",
-            children: [Todo(
-                name: "Gizem",
-                children: [Todo(
-                    name: "Ada",
-                    children: [], 
-                    isCompleted: false
-                )],
-                isCompleted: false
-            )],
-            isCompleted: false
-        )
-    ]
+    
+    var subchildArray: [Todo]
+    var userDefaultsContainer: UserDefaultsContainerProtocol
 
-    func makeCheckoutViewController(){
-        appCoordinator?.makeCreateTodoViewController()
+    let userDefaults = UserDefaults.standard
+    
+    init(
+        appCoordinator: AppCoordinator? = nil,
+        subchildArray: [Todo],
+        userDefaultsContainer: UserDefaultsContainerProtocol
+    ) {
+        self.appCoordinator = appCoordinator
+        self.subchildArray = subchildArray
+        self.userDefaultsContainer = userDefaultsContainer
+    }
+}
+
+// MARK: - Public methods
+
+extension TodoListViewModel {
+    
+    func fetchTask() -> [Todo] {
+        return userDefaultsContainer.fetchAll(entity: .todoItems)
+    }
+    
+    func deleteTask(item: Todo) {
+        userDefaultsContainer.delete(entity: .todoItems, item: item)
+    }
+    
+    func makeCreateTodoViewController(parentId: String?) {
+        appCoordinator?.makeCreateTodoViewController(parentId: parentId)
     }
 }

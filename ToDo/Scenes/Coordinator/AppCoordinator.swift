@@ -1,19 +1,18 @@
 import Foundation
 import UIKit
 
-protocol Coordinator {
-
-    var parentCoordinator: Coordinator? { get set }
-    var children: [Coordinator] { get set }
+protocol AppCoordinatorProtocol {
+    var parentCoordinator: AppCoordinatorProtocol? { get set }
+    var children: [AppCoordinatorProtocol] { get set }
     var navigationController : UINavigationController { get set }
     
     func start()
 }
 
-class AppCoordinator : Coordinator {
+class AppCoordinator: AppCoordinatorProtocol {
 
-    var parentCoordinator: Coordinator?
-    var children: [Coordinator] = []
+    var parentCoordinator: AppCoordinatorProtocol?
+    var children: [AppCoordinatorProtocol] = []
     var navigationController: UINavigationController
 
     init(navigationController : UINavigationController) {
@@ -31,11 +30,14 @@ class AppCoordinator : Coordinator {
         navigationController.pushViewController(todoListViewController, animated: true)
     }
     
-    func makeCreateTodoViewController(){
+    func makeCreateTodoViewController(parentId: String? = nil){
         let createTodoViewController = CreateTodoViewController()
-//        groceryListViewModel.appCoordinator = self
-//        createTodoViewController.modalPresentationStyle = .fullScreen
+        createTodoViewController.viewModel.appCoordinator = self
+        createTodoViewController.viewModel.parentId = parentId
         navigationController.pushViewController(createTodoViewController, animated: true)
-//        navigationController.present(createTodoViewController, animated: true)
+    }
+    
+    func makeTodoListViewControllerWithPop(){
+        navigationController.popViewController(animated: true)
     }
 }
