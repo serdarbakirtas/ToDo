@@ -29,7 +29,7 @@ class CreateTodoView: UIView {
     }
 }
 
-// MARK: Private methods
+// MARK: Private functions
 
 private extension CreateTodoView {
     

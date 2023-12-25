@@ -2,7 +2,7 @@ import Foundation
 import UIKit
 
 protocol TodoListViewCellDelegate: AnyObject {
-    func didCheckbox(uuid: Int)
+    func didCheckbox(indexPath: IndexPath, tag: Int)
 }
 
 class TodoListViewCell: UICollectionViewListCell {
@@ -24,11 +24,16 @@ class TodoListViewCell: UICollectionViewListCell {
         return button
     }()
     
-    // Delegates
+    // MARK: - Delegates
+    
     weak var delegate: TodoListViewCellDelegate?
     
-    // Properties
+    // MARK: - Properties
+    
     let CONSTANT: CGFloat = 8
+    var indexPath: IndexPath = IndexPath()
+    
+    // MARK: - Initializers
     
     override init(frame: CGRect) {
         super.init(frame: .zero)
@@ -37,6 +42,8 @@ class TodoListViewCell: UICollectionViewListCell {
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
+    
+    // MARK: - Life cycle
     
     override func layoutSubviews() {
         super.layoutSubviews()
@@ -57,10 +64,11 @@ class TodoListViewCell: UICollectionViewListCell {
     }
 }
 
-// MARK: Actions
+// MARK: - Actions
+
 extension TodoListViewCell {
     
     @objc func didCheckbox(_ sender: UIButton) {
-        delegate?.didCheckbox(uuid: sender.tag)
+        delegate?.didCheckbox(indexPath: indexPath, tag: sender.tag)
     }
 }

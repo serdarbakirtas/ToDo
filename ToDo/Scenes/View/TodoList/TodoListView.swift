@@ -7,7 +7,8 @@ class TodoListView: UIView {
     
     // Closures
     var deleteHandler: ((IndexPath) -> Void)?
-    var addSubtaskHandler: ((IndexPath) -> Void)?
+    var addHandler: ((IndexPath) -> Void)?
+    var editHandler: ((IndexPath) -> Void)?
     
     init() {
         super.init(frame: .zero)
@@ -20,7 +21,7 @@ class TodoListView: UIView {
     }
 }
 
-// MARK: - Private methods
+// MARK: - Private functions
 
 private extension TodoListView {
     
@@ -31,7 +32,7 @@ private extension TodoListView {
             guard let self else { return nil }
             
             let addSubtaskActionHandler: UIContextualAction.Handler = { action, view, completion in
-                if let action = self.addSubtaskHandler {
+                if let action = self.addHandler {
                     action(indexPath)
                 }
                 
@@ -55,6 +56,7 @@ private extension TodoListView {
         collectionView = UICollectionView(frame: .zero, collectionViewLayout: listLayout)
         collectionView.translatesAutoresizingMaskIntoConstraints = false
         collectionView.clipsToBounds = false
+        collectionView.delegate = self
         collectionView.tintColor = .black
         addSubview(collectionView)
         
@@ -64,5 +66,17 @@ private extension TodoListView {
             collectionView.leadingAnchor.constraint(equalTo: leadingAnchor),
             collectionView.trailingAnchor.constraint(equalTo: trailingAnchor),
         ])
+    }
+}
+
+// MARK: - UICollectionViewDelegate
+
+extension TodoListView: UICollectionViewDelegate {
+    
+    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        let cell = collectionView.cellForItem(at: indexPath)!
+        if let action = editHandler {
+            action(indexPath)
+        }
     }
 }

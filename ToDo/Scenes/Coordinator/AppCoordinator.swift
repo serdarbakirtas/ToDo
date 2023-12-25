@@ -25,7 +25,8 @@ class AppCoordinator: AppCoordinatorProtocol {
     }
     
     func makeTodoListViewController(){
-        let todoListViewController = TodoListViewController()
+        let viewModel = TodoListViewModel(subchildArray: [Todo](), userDefaultsContainer: UserDefaultsContainer())
+        let todoListViewController = TodoListViewController(viewModel: viewModel)
         todoListViewController.viewModel.appCoordinator = self
         navigationController.pushViewController(todoListViewController, animated: true)
     }

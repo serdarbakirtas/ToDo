@@ -2,16 +2,26 @@ import UIKit
 
 class TodoListViewController: UIViewController {
     
-    // Properties
-    private var dataSource: UICollectionViewDiffableDataSource<Int, Todo>! = nil
-    
-    // UI
-    private lazy var contentView = TodoListView()
+    // MARK: - Properties
+    private var dataSource: UICollectionViewDiffableDataSource<Int, Todo>? = nil
+    private var snapshot: NSDiffableDataSourceSectionSnapshot = NSDiffableDataSourceSectionSnapshot<Todo>()
     private let barButtonItem = RightBarButtonItem(with: "Add")
-
-    // View model
-    var viewModel: TodoListViewModelProtocol = TodoListViewModel(subchildArray: [Todo](), userDefaultsContainer: UserDefaultsContainer())
+    private lazy var contentView = TodoListView()
+    var viewModel: TodoListViewModelProtocol
     
+    // MARK: - Initializers
+    init(
+        viewModel: TodoListViewModelProtocol
+    ) {
+        self.viewModel = viewModel
+        super.init(nibName: nil, bundle: nil)
+    }
+    
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
+    // MARK: - Life cycle
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -21,15 +31,16 @@ class TodoListViewController: UIViewController {
         setBarButton()
         deleteTaskHandler()
         addSubtaskHandler()
+        editSubtaskHandler()
     }
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        reloadData()
+        updateDataSourceAndSnapshot()
     }
 }
 
-//MARK: - Public methods
+//MARK: - Public functions
 
 extension TodoListViewController {
     
@@ -39,15 +50,15 @@ extension TodoListViewController {
     }
 }
 
-// MARK: Private methods
+// MARK: Private functions
 
 private extension TodoListViewController {
     
     func configureDataSource() {
         let cellRegistration = UICollectionView.CellRegistration<TodoListViewCell, Todo> { (cell, indexPath, node) in
             cell.todoLabel.text = node.name
+            cell.indexPath = indexPath
             cell.buttonCheckbox.setImage(UIImage(systemName: node.isCompleted ? "checkmark.square.fill" : "square"), for: .normal)
-            // TODO
             cell.buttonCheckbox.tag = node.uuid?.hashValue ?? 0
             cell.delegate = self
             cell.accessories = node.childrens.isEmpty ? [] : [.outlineDisclosure()]
@@ -59,14 +70,14 @@ private extension TodoListViewController {
     }
     
     func createSnapshot() {
-        var snapshot = NSDiffableDataSourceSectionSnapshot<Todo>()
+        snapshot = NSDiffableDataSourceSectionSnapshot<Todo>()
         addChildren(of: viewModel.fetchTask(), to: nil, in: &snapshot)
         apply(to: &snapshot)
     }
     
     func apply(to snapshot: inout NSDiffableDataSourceSectionSnapshot<Todo>) {
         snapshot.collapse(snapshot.items)
-        dataSource.apply(snapshot, to: snapshot.items.count, animatingDifferences: .random())
+        dataSource?.apply(snapshot, to: snapshot.items.count, animatingDifferences: .random())
     }
     
     func addChildren(of nodes: [Todo], to parent: Todo?, in snapshot: inout NSDiffableDataSourceSectionSnapshot<Todo>) {
@@ -83,29 +94,35 @@ private extension TodoListViewController {
     
     func deleteTaskHandler() {
         contentView.deleteHandler = { [weak self] indexPath in
-            guard let self, let item = self.dataSource.itemIdentifier(for: indexPath) else { return }
+            guard let self, let item = self.dataSource?.itemIdentifier(for: indexPath) else { return }
             self.viewModel.deleteTask(item: item)
-            self.reloadData()
+            self.updateDataSourceAndSnapshot()
         }
     }
     
     func addSubtaskHandler() {
-        contentView.addSubtaskHandler = { [weak self] indexPath in
+        contentView.addHandler = { [weak self] indexPath in
             guard let self,
-                  let item = self.dataSource.itemIdentifier(for: indexPath),
+                  let item = self.dataSource?.itemIdentifier(for: indexPath),
                   let uuid = item.uuid else { return }
             
             self.makeCreateTodoViewController(parentId: uuid)
         }
     }
     
-    func setBarButton() {
-        barButtonItem.tapAction = { [weak self] in
-            self?.makeCreateTodoViewController(parentId: nil) // create root task if parent id is nil
+    func editSubtaskHandler() {
+        contentView.editHandler = { [weak self] indexPath in
+            self?.makeCreateTodoViewController(parentId: nil)
         }
     }
     
-    func reloadData() {
+    func setBarButton() {
+        barButtonItem.tapAction = { [weak self] in
+            self?.makeCreateTodoViewController(parentId: nil) // create root task because of parent id is nil
+        }
+    }
+    
+    func updateDataSourceAndSnapshot() {
         configureDataSource()
         createSnapshot()
     }
@@ -114,20 +131,16 @@ private extension TodoListViewController {
 // MARK: - Delegates
 
 extension TodoListViewController: TodoListViewCellDelegate {
-    func didCheckbox(uuid: Int) {
-//        findSelectedTodo(todos: viewModel.todos, uuid: uuid)
-    }
     
-    // TODO: Ugly code
-//    private func findSelectedTodo(todos: [Todo], uuid: Int) {
-//        for todo in todos {
-//            if todo.id.hashValue == uuid {
-//                print(uuid, todo.id.uuidString)
-//            } else {
-//                for childrens in todo.children {
-//                    findSelectedTodo(todos: [children], uuid: uuid)
-//                }
-//            }
-//        }
-//    }
+    func didCheckbox(indexPath: IndexPath, tag: Int) {
+        
+        guard let item = self.dataSource?.itemIdentifier(for: indexPath) else { return }
+        
+        viewModel.updateTask(item: item)
+        item.isCompleted.toggle()
+
+        guard var snapshot = dataSource?.snapshot() else { return }
+        snapshot.reloadItems([item])
+        dataSource?.apply(snapshot, animatingDifferences: true)
+    }
 }

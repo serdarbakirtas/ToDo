@@ -4,10 +4,16 @@ protocol UserDefaultsContainerProtocol {
     func save(entity: EntityType, todos: [Todo])
     func fetchAll(entity: EntityType) -> [Todo]
     func delete(entity: EntityType, item: Todo)
+    func update(entity: EntityType, item: Todo)
 }
 
 enum EntityType: String {
     case todoItems = "TodoItems"
+}
+
+enum ActionType {
+    case delete
+    case update
 }
 
 struct UserDefaultsContainer: UserDefaultsContainerProtocol {
@@ -43,7 +49,16 @@ struct UserDefaultsContainer: UserDefaultsContainerProtocol {
     ///   - id: the identity of the datan deleted from the todo model
     func delete(entity: EntityType, item: Todo) {
         let data = fetchAll(entity: .todoItems)
-        findTodo(todos: data, todo: item)
+        findAndRemoveOrUpdateTodos(todos: data, todo: item, actionType: .delete)
+    }
+    
+    /// Delete
+    /// - Parameters:
+    ///   - entity: Data model entities
+    ///   - id: the identity of the datan deleted from the todo model
+    func update(entity: EntityType, item: Todo) {
+        let data = fetchAll(entity: .todoItems)
+        findAndRemoveOrUpdateTodos(todos: data, todo: item, actionType: .update)
     }
 }
 
@@ -51,17 +66,28 @@ struct UserDefaultsContainer: UserDefaultsContainerProtocol {
 
 private extension UserDefaultsContainer {
     
-    func findTodo(todos: [Todo], todo: Todo) {
+    func findAndRemoveOrUpdateTodos(todos: [Todo], todo: Todo, actionType: ActionType) {
         var todos = todos
         todos.enumerated().forEach { (index, subTodo) in
-            if subTodo.uuid == todo.uuid {
-                todos.remove(at: index) // root todo finded
+            if subTodo.uuid == todo.uuid {  // root todo finded
+                switch actionType {
+                case .delete:
+                    todos.remove(at: index)
+                case .update:
+                    todos[index].isCompleted.toggle()
+                }
             } else {
                 subTodo.childrens.enumerated().forEach { (index, subChild) in
-                    if subChild.uuid == todo.uuid {
-                        subTodo.childrens.remove(at: index) // child todo finded
+                    if subChild.uuid == todo.uuid {  // child todo finded
+                        switch actionType {
+                        case .delete:
+                            subTodo.childrens.remove(at: index)
+                        case .update:
+                            subTodo.childrens[index].isCompleted.toggle()
+                        }
+                        
                     } else {
-                        findTodo(todos: subChild.childrens, todo: todo)
+                        findAndRemoveOrUpdateTodos(todos: subChild.childrens, todo: todo, actionType: actionType)
                     }
                 }
             }

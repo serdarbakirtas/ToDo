@@ -4,6 +4,7 @@ import UIKit
 protocol TodoListViewModelProtocol {
     func fetchTask() -> [Todo]
     func deleteTask(item: Todo)
+    func updateTask(item: Todo)
     func makeCreateTodoViewController(parentId: String?)
     
     var appCoordinator : AppCoordinator? { get set }
@@ -30,7 +31,7 @@ class TodoListViewModel: TodoListViewModelProtocol {
     }
 }
 
-// MARK: - Public methods
+// MARK: - Public functions
 
 extension TodoListViewModel {
     
@@ -40,6 +41,10 @@ extension TodoListViewModel {
     
     func deleteTask(item: Todo) {
         userDefaultsContainer.delete(entity: .todoItems, item: item)
+    }
+    
+    func updateTask(item: Todo) {
+        userDefaultsContainer.update(entity: .todoItems, item: item)
     }
     
     func makeCreateTodoViewController(parentId: String?) {
