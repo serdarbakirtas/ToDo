@@ -10,8 +10,21 @@ class CreateTodoViewController: UIViewController {
     let barButtonItem = RightBarButtonItem(with: "Save")
     
     // View model
-    var viewModel: CreateTodoViewModelProtocol = CreateTodoViewModel(userDefaultsContainer: UserDefaultsManager())
-    var userDefaultsContainer: UserDefaultsContainerProtocol = UserDefaultsManager()
+    var viewModel: CreateTodoViewModelProtocol
+    let isEditable: Bool
+    
+    init(
+        viewModel: CreateTodoViewModelProtocol,
+        isEditable: Bool
+    ) {
+        self.viewModel = viewModel
+        self.isEditable = isEditable
+        super.init(nibName: nil, bundle: nil)
+    }
+    
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -20,6 +33,8 @@ class CreateTodoViewController: UIViewController {
 
         barButtonItem.isEnabled = false
         barButtonItem.updateTitleColor(false)
+        contentView.taskInputField.text = isEditable ? viewModel.todo?.name : ""
+        
         contentView.textFieldEditing = { [weak self] editing in
             self?.barButtonItem.isEnabled = editing
             self?.barButtonItem.updateTitleColor(editing)
@@ -27,7 +42,11 @@ class CreateTodoViewController: UIViewController {
         
         barButtonItem.tapAction = { [weak self] in
             guard let self, let name = self.contentView.taskInputField.text else { return }
-            userDefaultsContainer.set(viewModel.readAndSaveTodo(name: name), for: .todoItems)
+            if isEditable {
+                self.viewModel.update(name: name)
+            } else {
+                self.viewModel.readAndSaveTodo(name: name)
+            }
             self.viewModel.popViewController()
         }
         

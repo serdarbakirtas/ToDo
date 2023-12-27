@@ -2,10 +2,12 @@ import Foundation
 
 protocol CreateTodoViewModelProtocol {
     func popViewController()
-    func readAndSaveTodo(name: String) -> [Todo]
+    func readAndSaveTodo(name: String)
+    func update(name: String)
     
-    var parentId: String? { get set }
+    var todo: Todo? { get set }
     var appCoordinator : AppCoordinator? { get set }
+    var userDefaultsContainer : UserDefaultsContainerProtocol { get set }
 }
 
 class CreateTodoViewModel: CreateTodoViewModelProtocol {
@@ -15,16 +17,16 @@ class CreateTodoViewModel: CreateTodoViewModelProtocol {
     var userDefaultsContainer: UserDefaultsContainerProtocol
     
     // Properties
-    var parentId: String?
+    var todo: Todo?
     
     init(
         appCoordinator: AppCoordinator? = nil,
         userDefaultsContainer: UserDefaultsContainerProtocol,
-        parentId: String? = nil
+        todo: Todo?
     ) {
         self.appCoordinator = appCoordinator
         self.userDefaultsContainer = userDefaultsContainer
-        self.parentId = parentId
+        self.todo = todo
     }
     
     func popViewController() {
@@ -36,26 +38,38 @@ class CreateTodoViewModel: CreateTodoViewModelProtocol {
 
 extension CreateTodoViewModel {
     
-    func readAndSaveTodo(name: String) -> [Todo] {
+    func update(name: String) {
+        let todos = userDefaultsContainer.fetchAll(key: .todoItems)
+        todo?.name = name
+        guard let todo else { return }
+        userDefaultsContainer.set(TodoBinaryTree.shared.update(todos, todo), for: .todoItems)
+    }
+    
+    func readAndSaveTodo(name: String) {
         
         var todos = userDefaultsContainer.fetchAll(key: .todoItems)
         
-        if (parentId) != nil {
-            addSubTodos(todos: todos, name: name)
+        if (todo?.uuid) != nil {
+            addChild(todos: todos, name: name)
         } else {
-            todos.append(Todo(name: name, parentId: parentId, isCompleted: false, uuid: UUID().uuidString, children: []))
+            todos.append(Todo(name: name, parentId: todo?.uuid, isCompleted: false, uuid: UUID().uuidString, children: []))
         }
-        return todos
+        userDefaultsContainer.set(todos, for: .todoItems)
     }
+}
+
+// MARK: Private functions
+
+private extension CreateTodoViewModel {
     
-    func addSubTodos(todos: [Todo], name: String) {
+    func addChild(todos: [Todo], name: String) {
         
-        if let parentId = parentId {
+        if let parentId = todo?.uuid {
             for node in todos {
                 if node.uuid == parentId {
                     node.childrens.append(Todo(name: name, parentId: parentId, isCompleted: false, uuid: UUID().uuidString, children: []))
                 } else {
-                    addSubTodos(todos: node.childrens, name: name)
+                    addChild(todos: node.childrens, name: name)
                 }
             }
         }

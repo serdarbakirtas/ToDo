@@ -36,7 +36,7 @@ class TodoListViewController: UIViewController {
         setBarButton()
         deleteTaskHandler()
         addSubtaskHandler()
-        editSubtaskHandler()
+        editTaskHandler()
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -50,8 +50,8 @@ class TodoListViewController: UIViewController {
 extension TodoListViewController {
     
     // Go to the detail page for creating a new task
-    func makeCreateTodoViewController(parentId: String?) {
-        viewModel.makeCreateTodoViewController(parentId: parentId)
+    func makeCreateTodoViewController(todo: Todo?, isEditable: Bool) {
+        viewModel.makeCreateTodoViewController(todo: todo, isEditable: isEditable)
     }
 }
 
@@ -110,23 +110,21 @@ private extension TodoListViewController {
     
     func addSubtaskHandler() {
         contentView.addHandler = { [weak self] indexPath in
-            guard let self,
-                  let item = self.dataSource?.itemIdentifier(for: indexPath),
-                  let uuid = item.uuid else { return }
-            
-            self.makeCreateTodoViewController(parentId: uuid)
+            guard let self, let item = self.dataSource?.itemIdentifier(for: indexPath) else { return }
+            self.makeCreateTodoViewController(todo: item, isEditable: false)
         }
     }
     
-    func editSubtaskHandler() {
+    func editTaskHandler() {
         contentView.editHandler = { [weak self] indexPath in
-            self?.makeCreateTodoViewController(parentId: nil)
+            guard let self, let item = self.dataSource?.itemIdentifier(for: indexPath) else { return }
+            self.makeCreateTodoViewController(todo: item, isEditable: true)
         }
     }
     
     func setBarButton() {
         barButtonItem.tapAction = { [weak self] in
-            self?.makeCreateTodoViewController(parentId: nil) // create root task because of parent id is nil
+            self?.makeCreateTodoViewController(todo: nil, isEditable: false) // create root task because of parent id is nil
         }
     }
     

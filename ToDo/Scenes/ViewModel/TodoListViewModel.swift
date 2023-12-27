@@ -5,7 +5,7 @@ protocol TodoListViewModelProtocol {
     func fetchTask() -> [Todo]
     func deleteTask(item: Todo)
     func updateTask(item: Todo)
-    func makeCreateTodoViewController(parentId: String?)
+    func makeCreateTodoViewController(todo: Todo?, isEditable: Bool)
     
     var appCoordinator : AppCoordinator? { get set }
 }
@@ -45,7 +45,7 @@ extension TodoListViewModel {
         userDefaultsContainer.update(key: .todoItems, item: item)
     }
     
-    func makeCreateTodoViewController(parentId: String?) {
-        appCoordinator?.makeCreateTodoViewController(parentId: parentId)
+    func makeCreateTodoViewController(todo: Todo?, isEditable: Bool) {
+        appCoordinator?.makeCreateTodoViewController(todo: todo, isEditable: isEditable)
     }
 }

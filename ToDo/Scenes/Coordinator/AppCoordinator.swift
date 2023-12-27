@@ -31,10 +31,10 @@ class AppCoordinator: AppCoordinatorProtocol {
         navigationController.pushViewController(todoListViewController, animated: true)
     }
     
-    func makeCreateTodoViewController(parentId: String? = nil){
-        let createTodoViewController = CreateTodoViewController()
+    func makeCreateTodoViewController(todo: Todo?, isEditable: Bool){
+        let viewModel = CreateTodoViewModel(userDefaultsContainer: UserDefaultsManager(), todo: todo)
+        let createTodoViewController = CreateTodoViewController(viewModel: viewModel, isEditable: isEditable)
         createTodoViewController.viewModel.appCoordinator = self
-        createTodoViewController.viewModel.parentId = parentId
         navigationController.pushViewController(createTodoViewController, animated: true)
     }
     

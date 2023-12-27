@@ -26,6 +26,28 @@ class TodoBinaryTree {
         return root
     }
     
+    /// Add
+    /// - Parameters:
+    ///   - root: To-do list from userdefaults
+    ///   - key: selected todo item
+    func add(_ root: [Todo], _ key: Todo) -> [Todo] {
+        var root = root
+        root.enumerated().forEach { (index, node) in
+            if node.uuid == key.uuid {
+                root.append(key)
+            } else {
+                node.childrens.enumerated().forEach { (index, children) in
+                    if children.uuid == key.uuid {
+                        node.childrens.append(children)
+                    } else {
+                        _ = add(node.childrens, key)
+                    }
+                }
+            }
+        }
+        return root
+    }
+    
     /// Update
     /// - Parameters:
     ///   - root: To-do list from userdefaults
