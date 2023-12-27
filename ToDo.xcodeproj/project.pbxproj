@@ -12,10 +12,9 @@
 		304988472B34EB9B00852459 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 304988462B34EB9B00852459 /* Assets.xcassets */; };
 		3049884A2B34EB9B00852459 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 304988482B34EB9B00852459 /* LaunchScreen.storyboard */; };
 		30BB60422B378D2100E2BF36 /* CreateTodoViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30BB60412B378D2100E2BF36 /* CreateTodoViewModel.swift */; };
+		30C7DEB42B3B4E6500505049 /* TodoBinaryTree.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30C7DEB32B3B4E6500505049 /* TodoBinaryTree.swift */; };
 		30DC929F2B36424D00D05409 /* TodoListViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30DC929E2B36424D00D05409 /* TodoListViewCell.swift */; };
-		30DC92D72B3737E800D05409 /* UserDefaultsContainer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30DC92D62B3737E700D05409 /* UserDefaultsContainer.swift */; };
-		30DC92D82B3737E800D05409 /* UserDefaultsContainer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30DC92D62B3737E700D05409 /* UserDefaultsContainer.swift */; };
-		30DC92E82B37549F00D05409 /* Todo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30EBA3D62B35AB7F00F12C46 /* Todo.swift */; };
+		30DC92D72B3737E800D05409 /* UserDefaultsManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30DC92D62B3737E700D05409 /* UserDefaultsManager.swift */; };
 		30EBA3AD2B34EBD100F12C46 /* ToDoShared.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 30EBA3A52B34EBD000F12C46 /* ToDoShared.framework */; };
 		30EBA3B42B34EBD100F12C46 /* ToDoSharedTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 30EBA3B32B34EBD100F12C46 /* ToDoSharedTests.m */; };
 		30EBA3B52B34EBD100F12C46 /* ToDoShared.h in Headers */ = {isa = PBXBuildFile; fileRef = 30EBA3A72B34EBD000F12C46 /* ToDoShared.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -77,8 +76,9 @@
 		3049884B2B34EB9B00852459 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		30BB603F2B3783AF00E2BF36 /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
 		30BB60412B378D2100E2BF36 /* CreateTodoViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CreateTodoViewModel.swift; sourceTree = "<group>"; };
+		30C7DEB32B3B4E6500505049 /* TodoBinaryTree.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TodoBinaryTree.swift; sourceTree = "<group>"; };
 		30DC929E2B36424D00D05409 /* TodoListViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TodoListViewCell.swift; sourceTree = "<group>"; };
-		30DC92D62B3737E700D05409 /* UserDefaultsContainer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserDefaultsContainer.swift; sourceTree = "<group>"; };
+		30DC92D62B3737E700D05409 /* UserDefaultsManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserDefaultsManager.swift; sourceTree = "<group>"; };
 		30EBA3A52B34EBD000F12C46 /* ToDoShared.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = ToDoShared.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		30EBA3A72B34EBD000F12C46 /* ToDoShared.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ToDoShared.h; sourceTree = "<group>"; };
 		30EBA3AC2B34EBD100F12C46 /* ToDoSharedTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = ToDoSharedTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -144,7 +144,6 @@
 			isa = PBXGroup;
 			children = (
 				30EBA3CB2B34F3C000F12C46 /* Common */,
-				30DC92D52B3737DD00D05409 /* Data */,
 				30EBA3D52B35AB3E00F12C46 /* Model */,
 				30DC92A02B36F4AA00D05409 /* Resources */,
 				30EBA3C12B34EDA900F12C46 /* Scenes */,
@@ -161,6 +160,23 @@
 			name = Frameworks;
 			sourceTree = "<group>";
 		};
+		30C7DEB12B3B4E5300505049 /* UI */ = {
+			isa = PBXGroup;
+			children = (
+				30EBA3CC2B34F3CD00F12C46 /* AddButtonItem.swift */,
+			);
+			path = UI;
+			sourceTree = "<group>";
+		};
+		30C7DEB22B3B4E5900505049 /* Helper */ = {
+			isa = PBXGroup;
+			children = (
+				30DC92D62B3737E700D05409 /* UserDefaultsManager.swift */,
+				30C7DEB32B3B4E6500505049 /* TodoBinaryTree.swift */,
+			);
+			path = Helper;
+			sourceTree = "<group>";
+		};
 		30DC92A02B36F4AA00D05409 /* Resources */ = {
 			isa = PBXGroup;
 			children = (
@@ -169,14 +185,6 @@
 				304988482B34EB9B00852459 /* LaunchScreen.storyboard */,
 			);
 			path = Resources;
-			sourceTree = "<group>";
-		};
-		30DC92D52B3737DD00D05409 /* Data */ = {
-			isa = PBXGroup;
-			children = (
-				30DC92D62B3737E700D05409 /* UserDefaultsContainer.swift */,
-			);
-			path = Data;
 			sourceTree = "<group>";
 		};
 		30EBA3A62B34EBD000F12C46 /* ToDoShared */ = {
@@ -244,7 +252,8 @@
 		30EBA3CB2B34F3C000F12C46 /* Common */ = {
 			isa = PBXGroup;
 			children = (
-				30EBA3CC2B34F3CD00F12C46 /* AddButtonItem.swift */,
+				30C7DEB12B3B4E5300505049 /* UI */,
+				30C7DEB22B3B4E5900505049 /* Helper */,
 			);
 			path = Common;
 			sourceTree = "<group>";
@@ -412,7 +421,7 @@
 			files = (
 				30BB60422B378D2100E2BF36 /* CreateTodoViewModel.swift in Sources */,
 				30DC929F2B36424D00D05409 /* TodoListViewCell.swift in Sources */,
-				30DC92D72B3737E800D05409 /* UserDefaultsContainer.swift in Sources */,
+				30DC92D72B3737E800D05409 /* UserDefaultsManager.swift in Sources */,
 				30EBA3C42B34EDCB00F12C46 /* AppCoordinator.swift in Sources */,
 				30EBA3D22B34F58400F12C46 /* CreateTodoViewController.swift in Sources */,
 				304988422B34EB9900852459 /* TodoListViewController.swift in Sources */,
@@ -421,6 +430,7 @@
 				30EBA3D42B34FA3600F12C46 /* CreateTodoView.swift in Sources */,
 				30EBA3CA2B34F1DE00F12C46 /* TodoListView.swift in Sources */,
 				30EBA3D02B34F4ED00F12C46 /* TodoListViewModel.swift in Sources */,
+				30C7DEB42B3B4E6500505049 /* TodoBinaryTree.swift in Sources */,
 				3049883E2B34EB9900852459 /* AppDelegate.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -429,8 +439,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				30DC92D82B3737E800D05409 /* UserDefaultsContainer.swift in Sources */,
-				30DC92E82B37549F00D05409 /* Todo.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -526,7 +534,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
 				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
@@ -583,7 +591,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
 				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
@@ -596,7 +604,6 @@
 		3049884F2B34EB9B00852459 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
@@ -607,7 +614,7 @@
 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
-				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -624,7 +631,6 @@
 		304988502B34EB9B00852459 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
@@ -635,7 +641,7 @@
 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
-				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -664,7 +670,7 @@
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
-				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -700,7 +706,7 @@
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
-				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -723,11 +729,10 @@
 		30EBA3BD2B34EBD100F12C46 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				GENERATE_INFOPLIST_FILE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = abc.xyz.any.ToDoSharedTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -740,11 +745,10 @@
 		30EBA3BE2B34EBD100F12C46 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				GENERATE_INFOPLIST_FILE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = abc.xyz.any.ToDoSharedTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";

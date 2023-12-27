@@ -38,7 +38,7 @@ extension CreateTodoViewModel {
     
     func readAndSaveTodo(name: String) -> [Todo] {
         
-        var todos = userDefaultsContainer.fetchAll(entity: .todoItems)
+        var todos = userDefaultsContainer.fetchAll(key: .todoItems)
         
         if (parentId) != nil {
             addSubTodos(todos: todos, name: name)

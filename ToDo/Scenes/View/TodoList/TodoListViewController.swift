@@ -3,17 +3,21 @@ import UIKit
 class TodoListViewController: UIViewController {
     
     // MARK: - Properties
-    private var dataSource: UICollectionViewDiffableDataSource<Int, Todo>? = nil
-    private var snapshot: NSDiffableDataSourceSectionSnapshot = NSDiffableDataSourceSectionSnapshot<Todo>()
+    
     private let barButtonItem = RightBarButtonItem(with: "Add")
+    private let userDefaultsContainer: UserDefaultsContainerProtocol
+    private lazy var dataSource: UICollectionViewDiffableDataSource<Int, Todo>? = nil
     private lazy var contentView = TodoListView()
     var viewModel: TodoListViewModelProtocol
     
     // MARK: - Initializers
+    
     init(
-        viewModel: TodoListViewModelProtocol
+        viewModel: TodoListViewModelProtocol,
+        userDefaultsContainer: UserDefaultsContainerProtocol
     ) {
         self.viewModel = viewModel
+        self.userDefaultsContainer = userDefaultsContainer
         super.init(nibName: nil, bundle: nil)
     }
     
@@ -22,6 +26,7 @@ class TodoListViewController: UIViewController {
     }
     
     // MARK: - Life cycle
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -57,7 +62,7 @@ private extension TodoListViewController {
     func configureDataSource() {
         let cellRegistration = UICollectionView.CellRegistration<TodoListViewCell, Todo> { (cell, indexPath, node) in
             cell.todoLabel.text = node.name
-            cell.indexPath = indexPath
+            cell.todo = node
             cell.buttonCheckbox.setImage(UIImage(systemName: node.isCompleted ? "checkmark.square.fill" : "square"), for: .normal)
             cell.buttonCheckbox.tag = node.uuid?.hashValue ?? 0
             cell.delegate = self
@@ -70,7 +75,7 @@ private extension TodoListViewController {
     }
     
     func createSnapshot() {
-        snapshot = NSDiffableDataSourceSectionSnapshot<Todo>()
+        var snapshot = NSDiffableDataSourceSectionSnapshot<Todo>()
         addChildren(of: viewModel.fetchTask(), to: nil, in: &snapshot)
         apply(to: &snapshot)
     }
@@ -96,7 +101,10 @@ private extension TodoListViewController {
         contentView.deleteHandler = { [weak self] indexPath in
             guard let self, let item = self.dataSource?.itemIdentifier(for: indexPath) else { return }
             self.viewModel.deleteTask(item: item)
-            self.updateDataSourceAndSnapshot()
+            
+            guard var snapshot = dataSource?.snapshot() else { return }
+            snapshot.deleteItems([item])
+            dataSource?.apply(snapshot, animatingDifferences: true)
         }
     }
     
@@ -126,21 +134,33 @@ private extension TodoListViewController {
         configureDataSource()
         createSnapshot()
     }
+    
+    func findAndUpdateCheckBoxes(todo: Todo, isComplete: Bool) {
+        let todos = userDefaultsContainer.fetchAll(key: .todoItems)
+        searchForItemsToUpdate(root: todos, key: todo, isComplete: isComplete)
+    }
+    
+    func searchForItemsToUpdate(root: [Todo], key: Todo, isComplete: Bool) {
+        
+        guard var snapshot = dataSource?.snapshot() else { return }
+        guard let snapshotNode = snapshot.itemIdentifiers.first(where: { $0.uuid == key.uuid }) else { return }
+        snapshotNode.isCompleted = isComplete
+        snapshot.reloadItems([snapshotNode])
+        dataSource?.apply(snapshot, animatingDifferences: true)
+        
+        for children in key.childrens {
+            children.isCompleted = snapshotNode.isCompleted
+            searchForItemsToUpdate(root: children.childrens, key: children, isComplete: snapshotNode.isCompleted)
+        }
+    }
 }
 
 // MARK: - Delegates
 
 extension TodoListViewController: TodoListViewCellDelegate {
     
-    func didCheckbox(indexPath: IndexPath, tag: Int) {
-        
-        guard let item = self.dataSource?.itemIdentifier(for: indexPath) else { return }
-        
-        viewModel.updateTask(item: item)
-        item.isCompleted.toggle()
-
-        guard var snapshot = dataSource?.snapshot() else { return }
-        snapshot.reloadItems([item])
-        dataSource?.apply(snapshot, animatingDifferences: true)
+    func didCheckbox(todo: Todo, tag: Int) {
+        todo.isCompleted.toggle()
+        findAndUpdateCheckBoxes(todo: todo, isComplete: todo.isCompleted)
     }
 }

@@ -17,8 +17,6 @@ class TodoListViewModel: TodoListViewModelProtocol {
     
     var subchildArray: [Todo]
     var userDefaultsContainer: UserDefaultsContainerProtocol
-
-    let userDefaults = UserDefaults.standard
     
     init(
         appCoordinator: AppCoordinator? = nil,
@@ -36,15 +34,15 @@ class TodoListViewModel: TodoListViewModelProtocol {
 extension TodoListViewModel {
     
     func fetchTask() -> [Todo] {
-        return userDefaultsContainer.fetchAll(entity: .todoItems)
+        return userDefaultsContainer.fetchAll(key: .todoItems)
     }
     
     func deleteTask(item: Todo) {
-        userDefaultsContainer.delete(entity: .todoItems, item: item)
+        userDefaultsContainer.delete(key: .todoItems, item: item)
     }
     
     func updateTask(item: Todo) {
-        userDefaultsContainer.update(entity: .todoItems, item: item)
+        userDefaultsContainer.update(key: .todoItems, item: item)
     }
     
     func makeCreateTodoViewController(parentId: String?) {

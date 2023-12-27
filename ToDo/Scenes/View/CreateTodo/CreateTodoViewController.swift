@@ -10,8 +10,8 @@ class CreateTodoViewController: UIViewController {
     let barButtonItem = RightBarButtonItem(with: "Save")
     
     // View model
-    var viewModel: CreateTodoViewModelProtocol = CreateTodoViewModel(userDefaultsContainer: UserDefaultsContainer())
-    var userDefaultsContainer: UserDefaultsContainerProtocol = UserDefaultsContainer()
+    var viewModel: CreateTodoViewModelProtocol = CreateTodoViewModel(userDefaultsContainer: UserDefaultsManager())
+    var userDefaultsContainer: UserDefaultsContainerProtocol = UserDefaultsManager()
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -27,7 +27,7 @@ class CreateTodoViewController: UIViewController {
         
         barButtonItem.tapAction = { [weak self] in
             guard let self, let name = self.contentView.taskInputField.text else { return }
-            userDefaultsContainer.save(entity: .todoItems, todos: viewModel.readAndSaveTodo(name: name))
+            userDefaultsContainer.set(viewModel.readAndSaveTodo(name: name), for: .todoItems)
             self.viewModel.popViewController()
         }
         
