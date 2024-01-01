@@ -91,28 +91,48 @@ private extension TodoListViewModel {
     }
     
     func unselectParentIfNeeded(todo: TodoItem) {
-        guard let parentId = todo.parentId,
+        guard let parentId = todo.parentId, !parentId.isEmpty,
               let parentItem = findItem(withId: parentId, in: fetchTasks()) else {
             return
         }
-        
+
         let anySiblingSelected = parentItem.children.contains { $0.isCompleted }
-        
+
         if !anySiblingSelected {
             parentItem.isCompleted = false
             postTodoNotification(value: parentItem)
             UserDefaultsManager(todoTreeManager: TodoTreeManager()).update(key: .todoItems, item: parentItem)
             unselectParentIfNeeded(todo: parentItem)
+        } else {
+            parentItem.isCompleted = parentItem.children.allSatisfy { $0.isCompleted }
+            postTodoNotification(value: parentItem)
+            UserDefaultsManager(todoTreeManager: TodoTreeManager()).update(key: .todoItems, item: parentItem)
+
+            // Propagate unselect action up to the root item
+            let rootItem = findRootItem(of: parentItem)
+            rootItem.isCompleted = false
+            postTodoNotification(value: rootItem)
+            UserDefaultsManager(todoTreeManager: TodoTreeManager()).update(key: .todoItems, item: rootItem)
         }
+    }
+    
+    // Helper method to find the root item of a given item
+    func findRootItem(of item: TodoItem) -> TodoItem {
+        var currentItem = item
+        while let parentId = currentItem.parentId,
+              let parentItem = findItem(withId: parentId, in: fetchTasks()) {
+            currentItem = parentItem
+        }
+        return currentItem
     }
 
     func completeParentIfNeeded(todo: TodoItem) {
-        guard let parentId = todo.parentId,
+        guard let parentId = todo.parentId, !parentId.isEmpty,
               let parentItem = findItem(withId: parentId, in: fetchTasks()) else {
             return
         }
 
-        let allSiblingsCompleted = parentItem.children.allSatisfy { $0.isCompleted }
+        let allSiblingsCompleted = parentItem.children.isEmpty || parentItem.children.allSatisfy { $0.isCompleted }
         
         if allSiblingsCompleted {
             parentItem.isCompleted = true
