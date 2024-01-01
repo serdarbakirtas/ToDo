@@ -30,13 +30,9 @@ class TodoListViewController: UIViewController {
         navigationItem.rightBarButtonItem = barButtonItem
         view = contentView
         
-        setBarButton()
-        deleteTaskHandler()
-        addSubtaskHandler()
-        editTaskHandler()
         reloadData()
-        
-        NotificationCenter.default.addObserver(self, selector: #selector(todoUpdate(notification:)), name: .todo, object: nil)
+        setupUI()
+        setupObservers()
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -63,6 +59,13 @@ extension TodoListViewController {
 
 private extension TodoListViewController {
     
+    func setupUI() {
+        setBarButton()
+        deleteTaskHandler()
+        addSubtaskHandler()
+        editTaskHandler()
+    }
+    
     func configureDataSource() {
         let cellRegistration = UICollectionView.CellRegistration<TodoListViewCell, TodoItem> { (cell, indexPath, node) in
             cell.todoLabel.text = node.name
@@ -80,7 +83,7 @@ private extension TodoListViewController {
     
     func createSnapshot() {
         var snapshot = NSDiffableDataSourceSectionSnapshot<TodoItem>()
-        addChildren(of: viewModel.fetchTask(), to: nil, in: &snapshot)
+        addChildren(of: viewModel.fetchTasks(), to: nil, in: &snapshot)
         apply(to: &snapshot)
     }
     
@@ -150,10 +153,19 @@ extension TodoListViewController: TodoListViewCellDelegate {
         snapshot.reloadItems([snapShotNode])
         dataSource?.apply(snapshot, animatingDifferences: true)
     }
+}
+
+// MARK: - Notification Handling
+
+private extension TodoListViewController {
     
     // TODO: Do not use nsnotification center - Ugly method
+    
+    func setupObservers() {
+        NotificationCenter.default.addObserver(self, selector: #selector(todoUpdate(notification:)), name: .todo, object: nil)
+    }
+
     @objc dynamic func todoUpdate(notification: Notification) {
-        
         if let todo = notification.userInfo?["value"] as? TodoItem {
             
             guard var snapshot = dataSource?.snapshot() else { return }

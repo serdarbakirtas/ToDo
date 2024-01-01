@@ -47,7 +47,10 @@ class AppCoordinator: AppCoordinatorProtocol {
             todo: todo
         )
         
-        let createTodoViewController = CreateTodoViewController(viewModel: viewModel, isEditable: isEditable)
+        let createTodoViewController = CreateTodoViewController(
+            viewModel: viewModel,
+            isEditable: isEditable
+        )
         createTodoViewController.viewModel.appCoordinator = self
         navigationController.pushViewController(createTodoViewController, animated: true)
     }
