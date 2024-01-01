@@ -31,15 +31,32 @@ class CreateTodoViewController: UIViewController {
         
         self.navigationItem.rightBarButtonItem = barButtonItem
 
+        addBarButton()
+        textFieldAction()
+        barButtonAction()
+        
+        view = contentView
+    }
+}
+
+// MARK: - Private functions
+
+private extension CreateTodoViewController {
+    
+    func addBarButton() {
         barButtonItem.isEnabled = false
         barButtonItem.updateTitleColor(false)
+    }
+    
+    func textFieldAction() {
         contentView.taskInputField.text = isEditable ? viewModel.todo?.name : ""
-        
         contentView.textFieldEditing = { [weak self] editing in
             self?.barButtonItem.isEnabled = editing
             self?.barButtonItem.updateTitleColor(editing)
         }
-        
+    }
+    
+    func barButtonAction() {
         barButtonItem.tapAction = { [weak self] in
             guard let self, let name = self.contentView.taskInputField.text else { return }
             if isEditable {
@@ -49,7 +66,5 @@ class CreateTodoViewController: UIViewController {
             }
             self.viewModel.popViewController()
         }
-        
-        view = contentView
     }
 }

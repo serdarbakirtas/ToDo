@@ -35,11 +35,17 @@ class TodoListViewController: UIViewController {
         addSubtaskHandler()
         editTaskHandler()
         reloadData()
+        
+        NotificationCenter.default.addObserver(self, selector: #selector(todoUpdate(notification:)), name: .todo, object: nil)
     }
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         reloadData()
+    }
+    
+    deinit {
+        NotificationCenter.default.removeObserver(self, name: .todo, object: nil)
     }
 }
 
@@ -130,10 +136,6 @@ private extension TodoListViewController {
         configureDataSource()
         createSnapshot()
     }
-    
-    func searchForItemsToUpdate(_ todos: [TodoItem]) {
-        reloadData()
-    }
 }
 
 // MARK: - Delegates
@@ -141,8 +143,24 @@ private extension TodoListViewController {
 extension TodoListViewController: TodoListViewCellDelegate {
     
     func didCheckbox(todo: TodoItem) {
-        todo.toggleCompleted()
-        let todos = viewModel.userDefaultsContainer.fetchAll(key: .todoItems)
-        searchForItemsToUpdate(todos)
+        
+        guard var snapshot = dataSource?.snapshot() else { return }
+        guard let snapShotNode = snapshot.itemIdentifiers.first(where: { $0.id == todo.id }) else { return }
+        viewModel.toggleCompleted(todo: snapShotNode)
+        snapshot.reloadItems([snapShotNode])
+        dataSource?.apply(snapshot, animatingDifferences: true)
+    }
+    
+    // TODO: Do not use nsnotification center - Ugly method
+    @objc dynamic func todoUpdate(notification: Notification) {
+        
+        if let todo = notification.userInfo?["value"] as? TodoItem {
+            
+            guard var snapshot = dataSource?.snapshot() else { return }
+            guard let snapShotNode = snapshot.itemIdentifiers.first(where: { $0.id == todo.id }) else { return }
+            snapShotNode.isCompleted = todo.isCompleted
+            snapshot.reloadItems([snapShotNode])
+            dataSource?.apply(snapshot, animatingDifferences: true)
+        }
     }
 }

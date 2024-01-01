@@ -16,6 +16,7 @@
 		30DC929F2B36424D00D05409 /* TodoListViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30DC929E2B36424D00D05409 /* TodoListViewCell.swift */; };
 		30DC92D72B3737E800D05409 /* UserDefaultsManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30DC92D62B3737E700D05409 /* UserDefaultsManager.swift */; };
 		30E7365B2B433AC600D3187D /* TodoItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30E7365A2B433AC600D3187D /* TodoItem.swift */; };
+		30E7365F2B4363C100D3187D /* NotificationCenterManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30E7365E2B4363C100D3187D /* NotificationCenterManager.swift */; };
 		30EBA3AD2B34EBD100F12C46 /* ToDoShared.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 30EBA3A52B34EBD000F12C46 /* ToDoShared.framework */; };
 		30EBA3B42B34EBD100F12C46 /* ToDoSharedTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 30EBA3B32B34EBD100F12C46 /* ToDoSharedTests.m */; };
 		30EBA3B52B34EBD100F12C46 /* ToDoShared.h in Headers */ = {isa = PBXBuildFile; fileRef = 30EBA3A72B34EBD000F12C46 /* ToDoShared.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -80,6 +81,7 @@
 		30DC929E2B36424D00D05409 /* TodoListViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TodoListViewCell.swift; sourceTree = "<group>"; };
 		30DC92D62B3737E700D05409 /* UserDefaultsManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserDefaultsManager.swift; sourceTree = "<group>"; };
 		30E7365A2B433AC600D3187D /* TodoItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TodoItem.swift; sourceTree = "<group>"; };
+		30E7365E2B4363C100D3187D /* NotificationCenterManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationCenterManager.swift; sourceTree = "<group>"; };
 		30EBA3A52B34EBD000F12C46 /* ToDoShared.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = ToDoShared.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		30EBA3A72B34EBD000F12C46 /* ToDoShared.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ToDoShared.h; sourceTree = "<group>"; };
 		30EBA3AC2B34EBD100F12C46 /* ToDoSharedTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = ToDoSharedTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -171,6 +173,7 @@
 		30C7DEB22B3B4E5900505049 /* Helper */ = {
 			isa = PBXGroup;
 			children = (
+				30E7365E2B4363C100D3187D /* NotificationCenterManager.swift */,
 				30DC92D62B3737E700D05409 /* UserDefaultsManager.swift */,
 				30C7DEB32B3B4E6500505049 /* TodoTreeManager.swift */,
 			);
@@ -422,6 +425,7 @@
 				30EBA3CA2B34F1DE00F12C46 /* TodoListView.swift in Sources */,
 				30EBA3D02B34F4ED00F12C46 /* TodoListViewModel.swift in Sources */,
 				30C7DEB42B3B4E6500505049 /* TodoTreeManager.swift in Sources */,
+				30E7365F2B4363C100D3187D /* NotificationCenterManager.swift in Sources */,
 				30E7365B2B433AC600D3187D /* TodoItem.swift in Sources */,
 				3049883E2B34EB9900852459 /* AppDelegate.swift in Sources */,
 			);
