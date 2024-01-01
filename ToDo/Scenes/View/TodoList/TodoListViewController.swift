@@ -5,19 +5,16 @@ class TodoListViewController: UIViewController {
     // MARK: - Properties
     
     private let barButtonItem = RightBarButtonItem(with: "Add")
-    private let userDefaultsContainer: UserDefaultsContainerProtocol
-    private lazy var dataSource: UICollectionViewDiffableDataSource<Int, Todo>? = nil
+    private lazy var dataSource: UICollectionViewDiffableDataSource<Int, TodoItem>? = nil
     private lazy var contentView = TodoListView()
     var viewModel: TodoListViewModelProtocol
     
     // MARK: - Initializers
     
     init(
-        viewModel: TodoListViewModelProtocol,
-        userDefaultsContainer: UserDefaultsContainerProtocol
+        viewModel: TodoListViewModelProtocol
     ) {
         self.viewModel = viewModel
-        self.userDefaultsContainer = userDefaultsContainer
         super.init(nibName: nil, bundle: nil)
     }
     
@@ -37,11 +34,12 @@ class TodoListViewController: UIViewController {
         deleteTaskHandler()
         addSubtaskHandler()
         editTaskHandler()
+        reloadData()
     }
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        updateDataSourceAndSnapshot()
+        reloadData()
     }
 }
 
@@ -50,7 +48,7 @@ class TodoListViewController: UIViewController {
 extension TodoListViewController {
     
     // Go to the detail page for creating a new task
-    func makeCreateTodoViewController(todo: Todo?, isEditable: Bool) {
+    func makeCreateTodoViewController(todo: TodoItem?, isEditable: Bool) {
         viewModel.makeCreateTodoViewController(todo: todo, isEditable: isEditable)
     }
 }
@@ -60,39 +58,39 @@ extension TodoListViewController {
 private extension TodoListViewController {
     
     func configureDataSource() {
-        let cellRegistration = UICollectionView.CellRegistration<TodoListViewCell, Todo> { (cell, indexPath, node) in
+        let cellRegistration = UICollectionView.CellRegistration<TodoListViewCell, TodoItem> { (cell, indexPath, node) in
             cell.todoLabel.text = node.name
             cell.todo = node
             cell.buttonCheckbox.setImage(UIImage(systemName: node.isCompleted ? "checkmark.square.fill" : "square"), for: .normal)
-            cell.buttonCheckbox.tag = node.uuid?.hashValue ?? 0
+            cell.buttonCheckbox.tag = node.id.hashValue
             cell.delegate = self
-            cell.accessories = node.childrens.isEmpty ? [] : [.outlineDisclosure()]
+            cell.accessories = node.children.isEmpty ? [] : [.outlineDisclosure()]
         }
-        dataSource = UICollectionViewDiffableDataSource<Int, Todo>(collectionView: contentView.collectionView) {
+        dataSource = UICollectionViewDiffableDataSource<Int, TodoItem>(collectionView: contentView.collectionView) {
             (collectionView, indexPath, node) -> UICollectionViewCell? in
             return collectionView.dequeueConfiguredReusableCell(using: cellRegistration, for: indexPath, item: node)
         }
     }
     
     func createSnapshot() {
-        var snapshot = NSDiffableDataSourceSectionSnapshot<Todo>()
+        var snapshot = NSDiffableDataSourceSectionSnapshot<TodoItem>()
         addChildren(of: viewModel.fetchTask(), to: nil, in: &snapshot)
         apply(to: &snapshot)
     }
     
-    func apply(to snapshot: inout NSDiffableDataSourceSectionSnapshot<Todo>) {
+    func apply(to snapshot: inout NSDiffableDataSourceSectionSnapshot<TodoItem>) {
         snapshot.collapse(snapshot.items)
-        dataSource?.apply(snapshot, to: snapshot.items.count, animatingDifferences: .random())
+        dataSource?.apply(snapshot, to: snapshot.items.count, animatingDifferences: true)
     }
     
-    func addChildren(of nodes: [Todo], to parent: Todo?, in snapshot: inout NSDiffableDataSourceSectionSnapshot<Todo>) {
+    func addChildren(of nodes: [TodoItem], to parent: TodoItem?, in snapshot: inout NSDiffableDataSourceSectionSnapshot<TodoItem>) {
         // If parent nil, this is the root Task
         snapshot.append(nodes, to: parent)
         for subChild in nodes {
-            snapshot.append(subChild.childrens, to: subChild)
-            for children in subChild.childrens {
+            snapshot.append(subChild.children, to: subChild)
+            for children in subChild.children {
                 // Create sub task, each sub task should has root task and different IDs.
-                addChildren(of: children.childrens, to: children, in: &snapshot)
+                addChildren(of: children.children, to: children, in: &snapshot)
             }
         }
     }
@@ -128,28 +126,13 @@ private extension TodoListViewController {
         }
     }
     
-    func updateDataSourceAndSnapshot() {
+    func reloadData() {
         configureDataSource()
         createSnapshot()
     }
     
-    func findAndUpdateCheckBoxes(todo: Todo, isComplete: Bool) {
-        let todos = userDefaultsContainer.fetchAll(key: .todoItems)
-        searchForItemsToUpdate(root: todos, key: todo, isComplete: isComplete)
-    }
-    
-    func searchForItemsToUpdate(root: [Todo], key: Todo, isComplete: Bool) {
-        
-        guard var snapshot = dataSource?.snapshot() else { return }
-        guard let snapshotNode = snapshot.itemIdentifiers.first(where: { $0.uuid == key.uuid }) else { return }
-        snapshotNode.isCompleted = isComplete
-        snapshot.reloadItems([snapshotNode])
-        dataSource?.apply(snapshot, animatingDifferences: true)
-        
-        for children in key.childrens {
-            children.isCompleted = snapshotNode.isCompleted
-            searchForItemsToUpdate(root: children.childrens, key: children, isComplete: snapshotNode.isCompleted)
-        }
+    func searchForItemsToUpdate(_ todos: [TodoItem]) {
+        reloadData()
     }
 }
 
@@ -157,8 +140,9 @@ private extension TodoListViewController {
 
 extension TodoListViewController: TodoListViewCellDelegate {
     
-    func didCheckbox(todo: Todo, tag: Int) {
-        todo.isCompleted.toggle()
-        findAndUpdateCheckBoxes(todo: todo, isComplete: todo.isCompleted)
+    func didCheckbox(todo: TodoItem) {
+        todo.toggleCompleted()
+        let todos = viewModel.userDefaultsContainer.fetchAll(key: .todoItems)
+        searchForItemsToUpdate(todos)
     }
 }

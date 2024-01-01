@@ -2,12 +2,13 @@ import Foundation
 import UIKit
 
 protocol TodoListViewModelProtocol {
-    func fetchTask() -> [Todo]
-    func deleteTask(item: Todo)
-    func updateTask(item: Todo)
-    func makeCreateTodoViewController(todo: Todo?, isEditable: Bool)
+    func fetchTask() -> [TodoItem]
+    func deleteTask(item: TodoItem)
+    func updateTask(item: TodoItem)
+    func makeCreateTodoViewController(todo: TodoItem?, isEditable: Bool)
     
     var appCoordinator : AppCoordinator? { get set }
+    var userDefaultsContainer: UserDefaultsContainerProtocol { get set }
 }
 
 class TodoListViewModel: TodoListViewModelProtocol {
@@ -15,12 +16,12 @@ class TodoListViewModel: TodoListViewModelProtocol {
     // Coordinator
     weak var appCoordinator : AppCoordinator?
     
-    var subchildArray: [Todo]
+    var subchildArray: [TodoItem]
     var userDefaultsContainer: UserDefaultsContainerProtocol
     
     init(
         appCoordinator: AppCoordinator? = nil,
-        subchildArray: [Todo],
+        subchildArray: [TodoItem],
         userDefaultsContainer: UserDefaultsContainerProtocol
     ) {
         self.appCoordinator = appCoordinator
@@ -33,19 +34,19 @@ class TodoListViewModel: TodoListViewModelProtocol {
 
 extension TodoListViewModel {
     
-    func fetchTask() -> [Todo] {
+    func fetchTask() -> [TodoItem] {
         return userDefaultsContainer.fetchAll(key: .todoItems)
     }
     
-    func deleteTask(item: Todo) {
+    func deleteTask(item: TodoItem) {
         userDefaultsContainer.delete(key: .todoItems, item: item)
     }
     
-    func updateTask(item: Todo) {
+    func updateTask(item: TodoItem) {
         userDefaultsContainer.update(key: .todoItems, item: item)
     }
     
-    func makeCreateTodoViewController(todo: Todo?, isEditable: Bool) {
+    func makeCreateTodoViewController(todo: TodoItem?, isEditable: Bool) {
         appCoordinator?.makeCreateTodoViewController(todo: todo, isEditable: isEditable)
     }
 }

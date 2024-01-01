@@ -5,7 +5,7 @@ protocol CreateTodoViewModelProtocol {
     func readAndSaveTodo(name: String)
     func update(name: String)
     
-    var todo: Todo? { get set }
+    var todo: TodoItem? { get set }
     var appCoordinator : AppCoordinator? { get set }
     var userDefaultsContainer : UserDefaultsContainerProtocol { get set }
 }
@@ -17,12 +17,12 @@ class CreateTodoViewModel: CreateTodoViewModelProtocol {
     var userDefaultsContainer: UserDefaultsContainerProtocol
     
     // Properties
-    var todo: Todo?
+    var todo: TodoItem?
     
     init(
         appCoordinator: AppCoordinator? = nil,
         userDefaultsContainer: UserDefaultsContainerProtocol,
-        todo: Todo?
+        todo: TodoItem?
     ) {
         self.appCoordinator = appCoordinator
         self.userDefaultsContainer = userDefaultsContainer
@@ -42,17 +42,17 @@ extension CreateTodoViewModel {
         let todos = userDefaultsContainer.fetchAll(key: .todoItems)
         todo?.name = name
         guard let todo else { return }
-        userDefaultsContainer.set(TodoBinaryTree.shared.update(todos, todo), for: .todoItems)
+        userDefaultsContainer.set(TodoTreeManager().update(todos, todo), for: .todoItems)
     }
     
     func readAndSaveTodo(name: String) {
         
         var todos = userDefaultsContainer.fetchAll(key: .todoItems)
         
-        if (todo?.uuid) != nil {
+        if (todo?.id) != nil {
             addChild(todos: todos, name: name)
         } else {
-            todos.append(Todo(name: name, parentId: todo?.uuid, isCompleted: false, uuid: UUID().uuidString, children: []))
+            todos.append(TodoItem(id: UUID().uuidString, title: name, isCompleted: false, parentId: nil))
         }
         userDefaultsContainer.set(todos, for: .todoItems)
     }
@@ -62,14 +62,14 @@ extension CreateTodoViewModel {
 
 private extension CreateTodoViewModel {
     
-    func addChild(todos: [Todo], name: String) {
+    func addChild(todos: [TodoItem], name: String) {
         
-        if let parentId = todo?.uuid {
+        if let parentId = todo?.id {
             for node in todos {
-                if node.uuid == parentId {
-                    node.childrens.append(Todo(name: name, parentId: parentId, isCompleted: false, uuid: UUID().uuidString, children: []))
+                if node.id == parentId {
+                    node.addChild(title: name, parentId: parentId)
                 } else {
-                    addChild(todos: node.childrens, name: name)
+                    addChild(todos: node.children, name: name)
                 }
             }
         }

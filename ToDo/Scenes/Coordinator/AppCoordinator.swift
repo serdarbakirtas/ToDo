@@ -25,14 +25,28 @@ class AppCoordinator: AppCoordinatorProtocol {
     }
     
     func makeTodoListViewController(){
-        let viewModel = TodoListViewModel(subchildArray: [Todo](), userDefaultsContainer: UserDefaultsManager())
-        let todoListViewController = TodoListViewController(viewModel: viewModel, userDefaultsContainer: UserDefaultsManager())
+        let todoTreeManager = TodoTreeManager()
+        let userDefaultsManager = UserDefaultsManager(todoTreeManager: todoTreeManager)
+        
+        let viewModel = TodoListViewModel(
+            subchildArray: [TodoItem](),
+            userDefaultsContainer: userDefaultsManager
+        )
+        
+        let todoListViewController = TodoListViewController(viewModel: viewModel)
         todoListViewController.viewModel.appCoordinator = self
         navigationController.pushViewController(todoListViewController, animated: true)
     }
     
-    func makeCreateTodoViewController(todo: Todo?, isEditable: Bool){
-        let viewModel = CreateTodoViewModel(userDefaultsContainer: UserDefaultsManager(), todo: todo)
+    func makeCreateTodoViewController(todo: TodoItem?, isEditable: Bool) {
+        let todoTreeManager = TodoTreeManager()
+        let userDefaultsManager = UserDefaultsManager(todoTreeManager: todoTreeManager)
+        
+        let viewModel = CreateTodoViewModel(
+            userDefaultsContainer: userDefaultsManager,
+            todo: todo
+        )
+        
         let createTodoViewController = CreateTodoViewController(viewModel: viewModel, isEditable: isEditable)
         createTodoViewController.viewModel.appCoordinator = self
         navigationController.pushViewController(createTodoViewController, animated: true)

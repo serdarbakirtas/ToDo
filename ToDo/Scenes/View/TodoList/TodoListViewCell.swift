@@ -2,7 +2,7 @@ import Foundation
 import UIKit
 
 protocol TodoListViewCellDelegate: AnyObject {
-    func didCheckbox(todo: Todo, tag: Int)
+    func didCheckbox(todo: TodoItem)
 }
 
 class TodoListViewCell: UICollectionViewListCell {
@@ -31,7 +31,7 @@ class TodoListViewCell: UICollectionViewListCell {
     // MARK: - Properties
     
     let CONSTANT: CGFloat = 8
-    var todo: Todo?
+    var todo: TodoItem?
     
     // MARK: - Initializers
     
@@ -70,6 +70,6 @@ extension TodoListViewCell {
     
     @objc func didCheckbox(_ sender: UIButton) {
         guard let todo else { return }
-        delegate?.didCheckbox(todo: todo, tag: sender.tag)
+        delegate?.didCheckbox(todo: todo)
     }
 }

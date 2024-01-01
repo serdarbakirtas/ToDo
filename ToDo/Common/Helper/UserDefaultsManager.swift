@@ -1,25 +1,39 @@
 import UIKit
 
+// MARK: - UserDefaultsContainerProtocol
+
 protocol UserDefaultsContainerProtocol {
     func set<T: Codable>(_ value: T, for key: EntityType)
-    func fetchAll(key: EntityType) -> [Todo]
-    func delete(key: EntityType, item: Todo)
-    func update(key: EntityType, item: Todo)
+    func set(todo: TodoItem, for key: EntityType)
+    func fetchAll(key: EntityType) -> [TodoItem]
+    func delete(key: EntityType, item: TodoItem)
+    func update(key: EntityType, item: TodoItem)
 }
+
+// MARK: - EntityType
 
 enum EntityType: String {
     case todoItems = "TodoItems"
 }
 
+// MARK: - UserDefaultsManager
+
 struct UserDefaultsManager: UserDefaultsContainerProtocol {
-    
     let defaults = UserDefaults.standard
-    
-    /// Set
-    /// - Parameters:
-    ///   - value: Generic parameter, can contain any Codable model
-    ///   - Key: entity type (string key)
-    func set<T: Codable>(_ value: T, for key: EntityType) {
+    let todoTreeManager: TodoTreeManagerProtocol
+
+    init(todoTreeManager: TodoTreeManagerProtocol) {
+        self.todoTreeManager = todoTreeManager
+    }
+
+    func set(todo: TodoItem, for key: EntityType) {
+        let todos = fetchAll(key: .todoItems)
+        let updatedTodos = todoTreeManager.update(todos, todo)
+
+        set(updatedTodos, for: key)
+    }
+
+    func set(_ value: some Codable, for key: EntityType) {
         do {
             let encoder = JSONEncoder()
             let encoded = try encoder.encode(value)
@@ -33,9 +47,7 @@ struct UserDefaultsManager: UserDefaultsContainerProtocol {
 // MARK: - Private function
 
 private extension UserDefaultsManager {
-    
     func set(value: Any?, for key: String) {
-        
         defaults.set(value, forKey: key)
         defaults.synchronize()
     }
@@ -44,37 +56,28 @@ private extension UserDefaultsManager {
 // MARK: Todos related
 
 extension UserDefaultsManager {
-    
-    /// Fetch
-    /// - Parameters:
-    ///   - entity: Data model entities
-    func fetchAll(key: EntityType) -> [Todo] {
+    func fetchAll(key: EntityType) -> [TodoItem] {
         if let savedData = defaults.object(forKey: key.rawValue) as? Data {
             do {
-                let savedContacts = try JSONDecoder().decode([Todo].self, from: savedData)
-                return savedContacts
-            } catch {}
+                let savedTodos = try JSONDecoder().decode([TodoItem].self, from: savedData)
+                return savedTodos
+            } catch {
+                print("Error decoding data: \(error)")
+                return []
+            }
         }
         return []
     }
-    
-    /// Delete
-    /// - Parameters:
-    ///   - key: Data model entities
-    ///   - item: Seleted todo item
-    func delete(key: EntityType, item: Todo) {
+
+    func delete(key: EntityType, item: TodoItem) {
         let data = fetchAll(key: key)
-        let todolist = TodoBinaryTree.shared.delete(data, item)
-        set(todolist, for: .todoItems)
+        let todolist = todoTreeManager.delete(data, item)
+        set(todolist, for: key)
     }
-    
-    /// Update
-    /// - Parameters:
-    ///   - key: Data model entities
-    ///   - id: Seleted todo item
-    func update(key: EntityType, item: Todo) {
+
+    func update(key: EntityType, item: TodoItem) {
         let data = fetchAll(key: key)
-        let todolist = TodoBinaryTree.shared.update(data, item)
-        set(todolist, for: .todoItems)
+        let todolist = todoTreeManager.update(data, item)
+        set(todolist, for: key)
     }
 }
