@@ -4,7 +4,7 @@ import UIKit
 protocol TodoListViewModelProtocol {
     func fetchTasks() -> [TodoItem]
     func deleteTask(item: TodoItem)
-    func updateTask(item: TodoItem)
+    func updateTask(item: TodoItem) 
     func makeCreateTodoViewController(todo: TodoItem?, isEditable: Bool)
     func toggleCompleted(todo: TodoItem)
     
