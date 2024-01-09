@@ -32,16 +32,14 @@ class TodoListViewController: UIViewController {
         
         reloadData()
         setupUI()
-        setupObservers()
+        viewModel.bindTodoItem = { [weak self] item in
+            self?.todoUpdate(item)
+        }
     }
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         reloadData()
-    }
-    
-    deinit {
-        NotificationCenter.default.removeObserver(self, name: .todo, object: nil)
     }
 }
 
@@ -139,6 +137,14 @@ private extension TodoListViewController {
         configureDataSource()
         createSnapshot()
     }
+    
+    func todoUpdate(_ todo: TodoItem) {
+        guard var snapshot = dataSource?.snapshot() else { return }
+        guard let snapShotNode = snapshot.itemIdentifiers.first(where: { $0.id == todo.id }) else { return }
+        snapShotNode.isCompleted = todo.isCompleted
+        snapshot.reloadItems([snapShotNode])
+        dataSource?.apply(snapshot, animatingDifferences: true)
+    }
 }
 
 // MARK: - Delegates
@@ -152,27 +158,5 @@ extension TodoListViewController: TodoListViewCellDelegate {
         viewModel.toggleCompleted(todo: snapShotNode)
         snapshot.reloadItems([snapShotNode])
         dataSource?.apply(snapshot, animatingDifferences: true)
-    }
-}
-
-// MARK: - Notification Handling
-
-private extension TodoListViewController {
-    
-    // TODO: Do not use nsnotification center - Ugly method
-    
-    func setupObservers() {
-        NotificationCenter.default.addObserver(self, selector: #selector(todoUpdate(notification:)), name: .todo, object: nil)
-    }
-
-    @objc dynamic func todoUpdate(notification: Notification) {
-        if let todo = notification.userInfo?["value"] as? TodoItem {
-            
-            guard var snapshot = dataSource?.snapshot() else { return }
-            guard let snapShotNode = snapshot.itemIdentifiers.first(where: { $0.id == todo.id }) else { return }
-            snapShotNode.isCompleted = todo.isCompleted
-            snapshot.reloadItems([snapShotNode])
-            dataSource?.apply(snapshot, animatingDifferences: true)
-        }
     }
 }

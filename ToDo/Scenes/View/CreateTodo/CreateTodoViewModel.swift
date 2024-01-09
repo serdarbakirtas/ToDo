@@ -14,18 +14,21 @@ class CreateTodoViewModel: CreateTodoViewModelProtocol {
     
     // Coordinator
     weak var appCoordinator : AppCoordinator?
-    var userDefaultsContainer: UserDefaultsContainerProtocol
     
     // Properties
     var todo: TodoItem?
+    var userDefaultsContainer: UserDefaultsContainerProtocol
+    let todoTreeManager: TodoTreeManager
     
     init(
         appCoordinator: AppCoordinator? = nil,
         userDefaultsContainer: UserDefaultsContainerProtocol,
+        todoTreeManager: TodoTreeManager = TodoTreeManager(),
         todo: TodoItem?
     ) {
         self.appCoordinator = appCoordinator
         self.userDefaultsContainer = userDefaultsContainer
+        self.todoTreeManager = todoTreeManager
         self.todo = todo
     }
     
@@ -42,7 +45,7 @@ extension CreateTodoViewModel {
         let todos = userDefaultsContainer.fetchAll(key: .todoItems)
         todo?.name = name
         guard let todo else { return }
-        userDefaultsContainer.set(TodoTreeManager().update(todos, todo), for: .todoItems)
+        userDefaultsContainer.set(todoTreeManager.update(todos, todo), for: .todoItems)
     }
     
     func readAndSaveTodo(name: String) {

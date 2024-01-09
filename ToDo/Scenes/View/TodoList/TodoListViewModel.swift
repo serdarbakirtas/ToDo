@@ -10,9 +10,13 @@ protocol TodoListViewModelProtocol {
     
     var appCoordinator: AppCoordinator? { get set }
     var userDefaultsContainer: UserDefaultsContainerProtocol { get set }
+    var bindTodoItem: ((TodoItem) -> Void)? { get set }
 }
 
 class TodoListViewModel: TodoListViewModelProtocol {
+    
+    var bindTodoItem: ((TodoItem) -> Void)?
+    
     weak var appCoordinator: AppCoordinator?
     var subchildArray: [TodoItem]
     var userDefaultsContainer: UserDefaultsContainerProtocol
@@ -51,6 +55,7 @@ extension TodoListViewModel {
 // MARK: - Toggle Completion
 
 extension TodoListViewModel {
+    
     func toggleCompleted(todo: TodoItem) {
         todo.isCompleted.toggle()
         
@@ -65,6 +70,7 @@ extension TodoListViewModel {
 // MARK: - Private methods
 
 private extension TodoListViewModel {
+    
     func findItem(withId itemId: String, in items: [TodoItem]) -> TodoItem? {
         for item in items {
             if item.id == itemId {
@@ -80,14 +86,9 @@ private extension TodoListViewModel {
     func completeChildren(_ todo: [TodoItem], _ isComplete: Bool) {
         for child in todo {
             child.isCompleted = isComplete
-            postTodoNotification(value: child)
-            UserDefaultsManager(todoTreeManager: TodoTreeManager()).update(key: .todoItems, item: child)
+            updateTodoItem(child)
             completeChildren(child.children, isComplete)
         }
-    }
-    
-    func postTodoNotification(value: TodoItem) {
-        NotificationCenter.default.post(name: .todo, object: self, userInfo: ["value": value])
     }
     
     func unselectParentIfNeeded(todo: TodoItem) {
@@ -100,19 +101,17 @@ private extension TodoListViewModel {
 
         if !anySiblingSelected {
             parentItem.isCompleted = false
-            postTodoNotification(value: parentItem)
-            UserDefaultsManager(todoTreeManager: TodoTreeManager()).update(key: .todoItems, item: parentItem)
+            
+            updateTodoItem(parentItem)
             unselectParentIfNeeded(todo: parentItem)
         } else {
             parentItem.isCompleted = parentItem.children.allSatisfy { $0.isCompleted }
-            postTodoNotification(value: parentItem)
-            UserDefaultsManager(todoTreeManager: TodoTreeManager()).update(key: .todoItems, item: parentItem)
+            updateTodoItem(parentItem)
 
             // Propagate unselect action up to the root item
             let rootItem = findRootItem(of: parentItem)
             rootItem.isCompleted = false
-            postTodoNotification(value: rootItem)
-            UserDefaultsManager(todoTreeManager: TodoTreeManager()).update(key: .todoItems, item: rootItem)
+            updateTodoItem(rootItem)
         }
     }
     
@@ -136,9 +135,17 @@ private extension TodoListViewModel {
         
         if allSiblingsCompleted {
             parentItem.isCompleted = true
-            postTodoNotification(value: parentItem)
-            UserDefaultsManager(todoTreeManager: TodoTreeManager()).update(key: .todoItems, item: parentItem)
+            
+            updateTodoItem(parentItem)
             completeParentIfNeeded(todo: parentItem)
         }
+    }
+    
+    func updateTodoItem(_ todoItem: TodoItem) {
+        guard let bindTodoItem else { return }
+        bindTodoItem(todoItem)
+        
+        // Update user defauls
+        UserDefaultsManager(todoTreeManager: TodoTreeManager()).update(key: .todoItems, item: todoItem)
     }
 }
